@@ -1,35 +1,63 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 const Job = ({ job }) => {
+  const [progress, setProgress] = useState(job.progress);
+  const [status, setStatus] = useState(job.status);
+  const [outputFile, setOutputFile] = useState(job.output_file);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      axios
+        .get(`/api/jobs/${job.id}/progress/`)
+        .then((response) => {
+          const { progress, status, output_file } = response.data;
+
+          setProgress(progress);
+          setStatus(status);
+          setOutputFile(output_file);
+
+          // Stop polling if job is completed
+          if (status === "completed") {
+            clearInterval(interval);
+          }
+        })
+        .catch((error) => console.error("Error fetching job progress:", error));
+    }, 2000); // Poll every 2 seconds
+
+    return () => clearInterval(interval); // Cleanup interval on unmount
+  }, [job.id]);
+
   return (
-    <div className="col col-12 p-2 todo-item" job-id={job.id}>
-      <div className="input-group">
-        <div className="input-group-prepend">
-          <div className="input-group-text">
-            <input
-              type="checkbox"
-              aria-label="Checkbox for following text input"
-            />
+    <tr>
+      <td>{job.id}</td>
+      <td>
+        <span className={`badge ${status === "completed" ? "bg-success" : "bg-warning text-dark"}`}>
+          {status}
+        </span>
+      </td>
+      <td>
+        <div className="progress">
+          <div
+            className={`progress-bar ${progress === 100 ? "bg-success" : "bg-info"}`}
+            role="progressbar"
+            style={{ width: `${progress}%` }}
+            aria-valuenow={progress}
+            aria-valuemin="0"
+            aria-valuemax="100"
+          >
+            {progress}%
           </div>
         </div>
-        <input
-          type="text"
-          className="form-control"
-          value={job.title}
-          readOnly
-        />
-        <div className="input-group-append">
-          <button
-            job-id={job.id}
-            className="btn btn-outline-secondary bg-danger text-white"
-            type="button"
-            id="button-addon2 "
-          >
-            X
-          </button>
-        </div>
-      </div>
-    </div>
+      </td>
+      <td>
+        {outputFile && (
+          <a href={outputFile} className="btn btn-sm btn-outline-success" download>
+            Download
+          </a>
+        )}
+      </td>
+    </tr>
   );
 };
 

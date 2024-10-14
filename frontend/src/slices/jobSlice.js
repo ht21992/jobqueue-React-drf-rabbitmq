@@ -8,84 +8,59 @@ const initialState = {
   jobs: [],
 };
 
+export const addJobAsync = (inputFile, conversionFormat) => async (dispatch) => {
+  const formData = new FormData();
+  formData.append("input_file", inputFile);
+  formData.append("conversion_format", conversionFormat);
 
-export const addJobAsync = (title) => async(dispatch) => {
-    const config = {
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-    };
+  try {
+    const res = await axios.post("api/jobs/", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
 
-    try{
-        const body = JSON.stringify({title});
-        const res = await axios.post('api/jobs/', body, config)
-
-        if (res.status === 201){
-            dispatch(addJob(res.data))
-            return Promise.resolve(); // Success
-        }
+    if (res.status === 201) {
+      dispatch(addJob(res.data));
+      return Promise.resolve();
     }
-
-    catch(error){
-        return Promise.reject(error); // Failure
-    }
-
-
-
-}
-
-
-
-// extra reducers
+  } catch (error) {
+    console.error("Failed to add job:", error);
+    return Promise.reject(error);
+  }
+};
 
 export const fetchJobsListAsync = createAsyncThunk(
   "jobs/fetchJobsListAsync",
   async () => {
-    const config = {
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    };
-    const response = await axios.get("api/jobs/", config);
+    const response = await axios.get("api/jobs/");
     return response.data;
   }
 );
 
 const jobSlice = createSlice({
   name: "jobs",
-  initialState: initialState,
+  initialState,
   reducers: {
     addJob: (state, action) => {
       state.jobs.push(action.payload);
     },
-
-    updateJobProgress: (state, action) => {
-      const { id, progress, status } = action.payload;
-      const job = state.jobs.find((job) => job.id === id);
-      if (job) {
-        job.progress = progress;
-        job.status = status;
-      }
-    },
   },
   extraReducers: (builder) => {
-    builder.addCase(fetchJobsListAsync.pending, (state, action) => {
-      state.loading = true;
-    //   state.jobs = [];
-    });
-    builder.addCase(fetchJobsListAsync.fulfilled, (state, action) => {
-      state.loading = false;
-      state.jobs = action.payload;
-    });
-    builder.addCase(fetchJobsListAsync.rejected, (state, action) => {
-      state.loading = false;
-    //   state.jobs = [];
-    });
+    builder
+      .addCase(fetchJobsListAsync.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchJobsListAsync.fulfilled, (state, action) => {
+        state.loading = false;
+        state.jobs = action.payload;
+      })
+      .addCase(fetchJobsListAsync.rejected, (state) => {
+        state.loading = false;
+      });
   },
 });
 
-export const { addJob, updateJobProgress } = jobSlice.actions;
+export const { addJob } = jobSlice.actions;
 
 export default jobSlice.reducer;

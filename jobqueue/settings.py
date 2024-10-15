@@ -141,8 +141,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 # rabbit MQ
-# CELERY_BROKER_URL = "amqp://guest:guest@[::1]:5672//"
-CELERY_BROKER_URL = "amqp://guest:guest@localhost:5672//"
+CELERY_BROKER_URL = "amqp://guest:guest@[::1]:5672//"
+# CELERY_BROKER_URL = "amqp://guest:guest@localhost:5672//"
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_RESULT_BACKEND = "redis://localhost:6379"  # or "rpc://"
 # CELERY_RESULT_BACKEND = "rpc://"  # or "rpc://"

@@ -6,25 +6,24 @@ import { useDispatch } from "react-redux";
 const JobsList = ({ jobs }) => {
   const dispatch = useDispatch();
   const [inputFile, setInputFile] = useState(null);
-  const [conversionFormat, setConversionFormat] = useState("png"); // Default format
+  const [conversionFormat, setConversionFormat] = useState("png");
 
   const handleAddJob = () => {
     if (inputFile) {
       dispatch(addJobAsync(inputFile, conversionFormat))
         .then(() => {
-          setInputFile(null); // Reset the input file
-          setConversionFormat("png"); // Reset to default format
+          setInputFile(null);
+          setConversionFormat("png");
         })
         .catch((error) => console.error("Failed to add job:", error));
     }
   };
 
-  
-
   return (
-    <div className="container mt-4">
-      <div className="row justify-content-center mb-3">
-        <div className="col-auto">
+    <div className="container mt-5">
+      <div className="card shadow-lg p-4 mb-4">
+        <h3 className="text-center mb-3">File Format Conversion</h3>
+        <div className="d-flex justify-content-around align-items-center">
           <div className="custom-file mb-2">
             <input
               type="file"
@@ -37,32 +36,29 @@ const JobsList = ({ jobs }) => {
               {inputFile ? inputFile.name : "Choose file"}
             </label>
           </div>
-        </div>
-        <div className="col-auto">
+
           <select
-            className="form-select"
+            className="form-select w-auto mx-2"
             value={conversionFormat}
             onChange={(e) => setConversionFormat(e.target.value)}
-            style={{ width: "150px" }} // Set a fixed width for uniformity
           >
-
             <option value="png">PNG</option>
             <option value="mp4">MP4</option>
             <option value="avi">AVI</option>
           </select>
-        </div>
-        <div className="col-auto">
+
           <button
             type="button"
-            className="btn btn-primary"
+            className="btn btn-primary shadow-sm"
             onClick={handleAddJob}
           >
             Convert
           </button>
         </div>
       </div>
-      <table className="table table-striped">
-        <thead>
+
+      <table className="table shadow-sm">
+        <thead className="table-dark">
           <tr>
             <th scope="col">Job ID</th>
             <th scope="col">Status</th>

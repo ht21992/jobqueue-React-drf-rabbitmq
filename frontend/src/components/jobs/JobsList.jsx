@@ -6,18 +6,20 @@ import { useDispatch } from "react-redux";
 const JobsList = ({ jobs }) => {
   const dispatch = useDispatch();
   const [inputFile, setInputFile] = useState(null);
-  const [conversionFormat, setConversionFormat] = useState("jpg"); // Default format
+  const [conversionFormat, setConversionFormat] = useState("png"); // Default format
 
   const handleAddJob = () => {
     if (inputFile) {
       dispatch(addJobAsync(inputFile, conversionFormat))
         .then(() => {
           setInputFile(null); // Reset the input file
-          setConversionFormat("jpg"); // Reset to default format
+          setConversionFormat("png"); // Reset to default format
         })
         .catch((error) => console.error("Failed to add job:", error));
     }
   };
+
+  
 
   return (
     <div className="container mt-4">
@@ -43,7 +45,7 @@ const JobsList = ({ jobs }) => {
             onChange={(e) => setConversionFormat(e.target.value)}
             style={{ width: "150px" }} // Set a fixed width for uniformity
           >
-            {/* <option value="jpg">JPG</option> */}
+
             <option value="png">PNG</option>
             <option value="mp4">MP4</option>
             <option value="avi">AVI</option>

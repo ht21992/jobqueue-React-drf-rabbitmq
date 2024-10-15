@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "corsheaders",
     "django_celery_results",
+    "celery_progress",
     # my apps
     "task",
 ]
@@ -140,10 +141,11 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 # rabbit MQ
-CELERY_BROKER_URL = "amqp://guest:guest@[::1]:5672//"
-# CELERY_BROKER_URL = "amqp://guest:guest@localhost:5672//"
+# CELERY_BROKER_URL = "amqp://guest:guest@[::1]:5672//"
+CELERY_BROKER_URL = "amqp://guest:guest@localhost:5672//"
 CELERY_ACCEPT_CONTENT = ["json"]
-CELERY_RESULT_BACKEND = "rpc://"  # or "rpc://"
+CELERY_RESULT_BACKEND = "redis://localhost:6379"  # or "rpc://"
+# CELERY_RESULT_BACKEND = "rpc://"  # or "rpc://"
 CELERY_TASK_SERIALIZER = "json"  # Ensure tasks are serialized in JSON
 CELERY_RESULT_SERIALIZER = "json"  # Ensure results are serialized in JSON
 CELERY_TIMEZONE = "UTC"  # Or your local timezone

@@ -1,44 +1,70 @@
-from celery import shared_task, current_task
-from .models import Job
-from PIL import Image
 import os
+from celery import shared_task
+from celery_progress.backend import ProgressRecorder
+from PIL import Image
 from moviepy.editor import VideoFileClip
+from .models import Job
+from celery.utils.log import get_task_logger
 import time
+import json
+from django.core.files import File
+
+
+celery_logger = get_task_logger(__name__)
+# celery_logger.info(f"Celery progress index:{index}, total:{total}")
 
 
 @shared_task(bind=True)
 def process_job(self, job_id):
-    job = Job.objects.get(id=job_id)
-    job.status = "in progress"
+    progress_recorder = ProgressRecorder(self)
+    try:
+        job = Job.objects.get(id=job_id)
+    except Job.DoesNotExist:
+        return {"status": "FAILED", "error": "removed or invalid job id"}
+
+    # Set initial job status
+    job.status = "PENDING"
     job.save()
 
     input_path = job.input_file.path
+    input_path_replaced = input_path.replace("uploads", "converted")
     output_format = job.conversion_format.lower()
-    output_path = f"{os.path.splitext(input_path)[0]}.{output_format}"
+    output_path = f"{os.path.splitext(input_path_replaced)[0]}.{output_format}"
 
+    # celery_logger.info(f"output_path:{output_path}")
     try:
         if output_format in ["jpg", "png", "gif"]:
             with Image.open(input_path) as img:
-                img.convert("RGB").save(output_path, output_format.upper())
+                img = img.convert("RGB")
+                progress_recorder.set_progress(
+                    50, 100, description="Processing image..."
+                )
+                img.save(output_path, output_format.upper())
 
         elif output_format in ["mp4", "avi", "gif"]:
             clip = VideoFileClip(input_path)
-            clip.write_videofile(output_path, codec="libx264")
+            total_duration = clip.duration
 
-        # Simulate long task with progress updates
-        for i in range(1, 11):  # 10 steps, each 10% progress
-            time.sleep(1)  # Simulate processing delay
-            progress = i * 10
-            self.update_state(state="PROGRESS", meta={"progress": progress})
+            def progress_callback(current_time):
+                progress = int((current_time / total_duration) * 100)
+                progress_recorder.set_progress(
+                    progress, 100, description=f"Processing video... {progress}%"
+                )
 
-        job.status = "completed"
-        job.progress = 100
+            # Start conversion with periodic progress updates
+            for t in range(0, int(total_duration) + 1):
+                time.sleep(1)  # Simulate time passing
+                progress_callback(t)
+
+            clip.write_videofile(output_path, codec="libx264", logger=None)
+
+        job.status = "SUCCESS"
         job.output_file.name = output_path.replace(os.getcwd() + "/", "")
         job.result = "Conversion successful!"
 
     except Exception as e:
-        job.status = "failed"
+        job.status = "FAILURE"
         job.result = str(e)
 
     job.save()
-    return {"status": "completed", "progress": 100}
+    return {"status": job.status, "output_file": job.output_file.url}

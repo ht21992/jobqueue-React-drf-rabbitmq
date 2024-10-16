@@ -22,6 +22,10 @@ def process_job(self, job_id):
     except Job.DoesNotExist:
         return {"status": "FAILED", "error": "removed or invalid job id"}
 
+    # check converted directory exists
+    if not os.path.exists("./media/converted"):
+        os.makedirs("./media/converted")
+
     # Set initial job status
     job.status = "PENDING"
     job.save()
@@ -33,15 +37,16 @@ def process_job(self, job_id):
 
     # celery_logger.info(f"output_path:{output_path}")
     try:
-        if output_format in ["jpg", "png", "gif"]:
+        if output_format in ["jpg", "png", "jpeg", "webp"]:
             with Image.open(input_path) as img:
                 img = img.convert("RGB")
                 progress_recorder.set_progress(
                     50, 100, description="Processing image..."
                 )
+                celery_logger.info(f"output_format:{output_format}")
                 img.save(output_path, output_format.upper())
 
-        elif output_format in ["mp4", "avi", "gif"]:
+        elif output_format in ["mp4", "avi"]:
             clip = VideoFileClip(input_path)
             total_duration = clip.duration
 
@@ -68,3 +73,5 @@ def process_job(self, job_id):
 
     job.save()
     return {"status": job.status, "output_file": job.output_file.url}
+
+

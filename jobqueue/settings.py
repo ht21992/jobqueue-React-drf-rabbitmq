@@ -12,7 +12,9 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
+from dotenv import load_dotenv
 
+load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -21,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-vvq)05()3eu_9&ezzz-d(31fp7%v&zrso1kb=-#+bvvruc_=&m"
+SECRET_KEY = os.getenv("DJ_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -141,10 +143,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 # rabbit MQ
-CELERY_BROKER_URL = "amqp://guest:guest@[::1]:5672//"
-# CELERY_BROKER_URL = "amqp://guest:guest@localhost:5672//"
+CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL") # example "amqp://guest:guest@localhost:5672//" or "amqp://guest:guest@[::1]:5672//""
 CELERY_ACCEPT_CONTENT = ["json"]
-CELERY_RESULT_BACKEND = "redis://localhost:6379"  # or "rpc://"
+CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND")  # example "redis://localhost:6379"  or "rpc://"
 # CELERY_RESULT_BACKEND = "rpc://"  # or "rpc://"
 CELERY_TASK_SERIALIZER = "json"  # Ensure tasks are serialized in JSON
 CELERY_RESULT_SERIALIZER = "json"  # Ensure results are serialized in JSON

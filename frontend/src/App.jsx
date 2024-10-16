@@ -20,7 +20,7 @@ function App() {
 
   return (
     <>
-      <h1>JobQueue</h1>
+      <h1>Job Queue</h1>
 
       <JobsList jobs={jobs} />
     </>

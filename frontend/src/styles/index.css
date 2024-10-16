@@ -1,39 +1,40 @@
 @import url("https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css");
-/* General Styling */
+
 body {
   background-color: #f8f9fa;
   font-family: "Roboto", sans-serif;
 }
 
-/* Card Styling */
+
 .card {
   border-radius: 15px;
   background: linear-gradient(145deg, #e0e0e0, #ffffff);
 }
 
-/* Job Table Styling */
+
 .table {
-  border-radius: 12px;
+  /* border-radius: 12px; */
   overflow: hidden;
+
 }
 
-/* Job Row Styling */
+
 .job-row {
   transition: transform 0.2s ease-in-out;
 }
 
-/* .job-row:hover {
+.job-row:hover {
   transform: scale(1.02);
   background-color: #f1f3f5;
-} */
+}
 
-/* Custom File Input */
+
 .custom-file-input:focus + .custom-file-label {
   border-color: #80bdff;
   box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
-/* Progress Bar */
+
 .progress {
   height: 25px;
 }
@@ -42,13 +43,17 @@ body {
   transition: width 0.5s ease-in-out;
 }
 
-/* Buttons */
+
 .btn {
   border-radius: 50px;
   transition: background-color 0.3s;
+  margin-bottom: 9px;
 }
 
-.btn:hover {
-  background-color: #004085;
-  color: #fff;
+
+
+
+.form-select{
+  height: 36px;
+  margin-bottom: 9px;
 }

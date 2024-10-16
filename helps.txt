@@ -1,5 +1,12 @@
 # Run Celery on Windows
+
+# you might need gevent on Windows
+celery -A jobqueue worker -l info -P gevent
+
+# this is solo mode
 celery -A jobqueue worker --loglevel=info --pool=solo
+
+
 
 
 # setup rabbitmq on ubuntu

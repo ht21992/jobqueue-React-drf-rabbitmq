@@ -1,13 +1,21 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import Job from "./Job";
-import { addJobAsync } from "../../slices/jobSlice";
+import { addJobAsync, deleteJobAsync } from "../../slices/jobSlice";
 import { useDispatch } from "react-redux";
+import Button from "../button/Button";
+import Input from "../input/Input";
 
 const JobsList = ({ jobs }) => {
   const dispatch = useDispatch();
   const [inputFile, setInputFile] = useState(null);
   const [conversionFormat, setConversionFormat] = useState();
   const [availableFormats, setAvailableFormats] = useState([]);
+
+  const handleDeleteJob = useCallback((jobId) => {
+    dispatch(deleteJobAsync(jobId)).catch((error) =>
+      console.error(`Failed to delete job - ${jobId}:`, error)
+    );
+  }, []);
 
   const handleAddJob = () => {
     if (availableFormats.length === 0 || !conversionFormat) return;
@@ -17,7 +25,7 @@ const JobsList = ({ jobs }) => {
         .then(() => {
           setInputFile(null);
           setConversionFormat("");
-          setAvailableFormats([])
+          setAvailableFormats([]);
         })
         .catch((error) => console.error("Failed to add job:", error));
     }
@@ -33,15 +41,13 @@ const JobsList = ({ jobs }) => {
       const fileFormat = mimeType.split("/").reverse()[0];
 
       if (mimeType.startsWith("image/")) {
-        const imgFormats = ["png","jpeg", "webp"].filter(
+        const imgFormats = ["png", "jpeg", "webp"].filter(
           (f) => f !== fileFormat
         );
         setAvailableFormats(imgFormats);
         setConversionFormat(imgFormats[0]);
       } else if (mimeType.startsWith("video/")) {
-        const videFormats = ["mp4", "avi"].filter(
-          (f) => f !== fileFormat
-        );
+        const videFormats = ["mp4", "avi"].filter((f) => f !== fileFormat);
         setAvailableFormats(videFormats);
         // setConversionFormat("mp4");
         setConversionFormat(videFormats[0]);
@@ -57,7 +63,7 @@ const JobsList = ({ jobs }) => {
           <div className="card shadow-lg p-4 mb-4">
             <div className="d-flex justify-content-around align-items-center">
               <div className="custom-file mb-2 mx-2">
-                <input
+                <Input
                   type="file"
                   className="custom-file-input"
                   id="inputFile"
@@ -69,50 +75,50 @@ const JobsList = ({ jobs }) => {
                 </label>
               </div>
               {availableFormats.length > 0 ? (
-                <select
-                  className="form-select w-auto mx-2"
-                  value={conversionFormat}
-                  onChange={(e) => setConversionFormat(e.target.value)}
-                >
-                  {availableFormats.map((format) => (
-                    <option key={format} value={format}>
-                      {format.toUpperCase()}
-                    </option>
-                  ))}
-                </select>
+                <>
+                  <select
+                    className="form-select w-auto mx-2"
+                    value={conversionFormat}
+                    onChange={(e) => setConversionFormat(e.target.value)}
+                  >
+                    {availableFormats.map((format) => (
+                      <option key={format} value={format}>
+                        {format.toUpperCase()}
+                      </option>
+                    ))}
+                  </select>
+                  <Button
+                    text="Convert"
+                    type="button"
+                    className="btn btn-outline-dark shadow-sm"
+                    onClick={() => handleAddJob()}
+                  />
+                </>
               ) : (
                 inputFile && (
                   <small className="mb-2 text-danger mx-2">Not Supported</small>
                 )
               )}
-
-              <button
-                type="button"
-                className="btn btn-outline-dark shadow-sm"
-                onClick={handleAddJob}
-                disabled={availableFormats.length === 0}
-              >
-                Convert
-              </button>
             </div>
           </div>
         </div>
-        {jobs.length > 0 && (<table className="table shadow-sm">
-          <thead className="table-dark">
-            <tr>
-              <th scope="col">ID</th>
-              <th scope="col">Status</th>
-              <th scope="col">Progress</th>
-              <th scope="col">Output File</th>
-            </tr>
-          </thead>
-          <tbody>
-            {jobs.map((job) => (
-              <Job key={job.id} job={job} />
-            ))}
-          </tbody>
-        </table>)}
-
+        {jobs.length > 0 && (
+          <table className="table shadow-sm">
+            <thead className="table-dark">
+              <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Status</th>
+                <th scope="col">Progress</th>
+                <th scope="col">Output File</th>
+              </tr>
+            </thead>
+            <tbody>
+              {jobs.map((job) => (
+                <Job key={job.id} job={job} onDelete={handleDeleteJob} />
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   );

@@ -8,27 +8,47 @@ const initialState = {
   jobs: [],
 };
 
-export const addJobAsync = (inputFile, conversionFormat) => async (dispatch) => {
-  const formData = new FormData();
-  formData.append("input_file", inputFile);
-  formData.append("conversion_format", conversionFormat);
-
+export const deleteJobAsync = (jobId) => async (dispatch) => {
   try {
-    const res = await axios.post("api/jobs/", formData, {
+    const config = {
       headers: {
-        "Content-Type": "multipart/form-data",
+        Accept: "application/json",
+        "Content-Type": "application/json",
       },
-    });
-
-    if (res.status === 201) {
-      dispatch(addJob(res.data));
+    };
+    const res = await axios.delete(`api/jobs/${jobId}/`, config);
+    if (res.status === 204) {
+      dispatch(deleteJob(jobId));
       return Promise.resolve();
     }
   } catch (error) {
-    console.error("Failed to add job:", error);
+    console.log("Failed to delete a job", error);
     return Promise.reject(error);
   }
 };
+
+export const addJobAsync =
+  (inputFile, conversionFormat) => async (dispatch) => {
+    const formData = new FormData();
+    formData.append("input_file", inputFile);
+    formData.append("conversion_format", conversionFormat);
+
+    try {
+      const res = await axios.post("api/jobs/", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (res.status === 201) {
+        dispatch(addJob(res.data));
+        return Promise.resolve();
+      }
+    } catch (error) {
+      console.error("Failed to add job:", error);
+      return Promise.reject(error);
+    }
+  };
 
 export const fetchJobsListAsync = createAsyncThunk(
   "jobs/fetchJobsListAsync",
@@ -44,6 +64,13 @@ const jobSlice = createSlice({
   reducers: {
     addJob: (state, action) => {
       state.jobs.push(action.payload);
+    },
+    deleteJob: (state, action) => {
+      const jobListArr = state.jobs;
+      jobListArr.splice(
+        jobListArr.findIndex(({ id }) => id === action.payload),
+        1
+      );
     },
   },
   extraReducers: (builder) => {
@@ -61,6 +88,6 @@ const jobSlice = createSlice({
   },
 });
 
-export const { addJob } = jobSlice.actions;
+export const { addJob, deleteJob } = jobSlice.actions;
 
 export default jobSlice.reducer;

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import Button from "../button/Button";
 
-const Job = ({ job }) => {
+const Job = ({ job, onDelete }) => {
   const progressDict = {
     STARTED: 0,
     PENDING: 0,
@@ -80,13 +81,21 @@ const Job = ({ job }) => {
       </td>
       <td>
         {outputFile && (
-          <a
-            href={outputFile}
-            className="btn btn-outline-success btn-sm shadow-sm"
-            download
-          >
-            Download
-          </a>
+          <>
+            <a
+              href={outputFile}
+              className="btn btn-outline-success btn-sm shadow-sm"
+              download
+            >
+              Download
+            </a>
+            <Button
+              text="Delete"
+              type="button"
+              className="btn btn-outline-danger mb-2 mx-2 btn-sm shadow-sm"
+              onClick={() => onDelete(job.id)}
+            />
+          </>
         )}
       </td>
     </tr>

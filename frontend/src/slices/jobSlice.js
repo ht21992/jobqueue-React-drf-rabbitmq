@@ -72,6 +72,13 @@ const jobSlice = createSlice({
         1
       );
     },
+    setJobProgress: (state, action) => {
+      const jobIndex = state.jobs.findIndex(job => job.id === action.payload.jobId);
+      if (jobIndex !== -1) {
+        state.jobs[jobIndex].progress = action.payload.progress;
+        state.jobs[jobIndex].status = action.payload.status;
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -88,6 +95,13 @@ const jobSlice = createSlice({
   },
 });
 
-export const { addJob, deleteJob } = jobSlice.actions;
+export const { addJob, deleteJob,setJobProgress } = jobSlice.actions;
+
+
+// New action to fetch job progress
+export const fetchJobProgress = (jobId) => ({
+  type: 'jobs/fetchJobProgress',
+  payload: { jobId },
+});
 
 export default jobSlice.reducer;

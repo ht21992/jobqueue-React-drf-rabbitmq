@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Button from "../button/Button";
+import { useDispatch } from "react-redux";
+import { fetchJobProgress } from "../../slices/jobSlice";
 
 const Job = ({ job, onDelete }) => {
+
+  const dispatch = useDispatch();
   const progressDict = {
     STARTED: 0,
     PENDING: 0,
@@ -26,6 +30,14 @@ const Job = ({ job, onDelete }) => {
   const [description, setDescription] = useState(job.result);
   const [status, setStatus] = useState(job.status);
   const [outputFile, setOutputFile] = useState(job.output_file);
+
+  useEffect(() => {
+    if (!["SUCCESS", "FAILURE"].includes(job.status)){
+      dispatch(fetchJobProgress({ jobId: job.task_id }));
+    }
+
+  }, [dispatch, job.task_id]); // Dependency on job.task_id
+
 
   if (!["SUCCESS", "FAILURE"].includes(job.status)) {
     useEffect(() => {

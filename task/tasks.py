@@ -6,12 +6,9 @@ from moviepy.editor import VideoFileClip
 from .models import Job
 from celery.utils.log import get_task_logger
 import time
-import json
-from django.core.files import File
-
 
 celery_logger = get_task_logger(__name__)
-# celery_logger.info(f"Celery progress index:{index}, total:{total}")
+
 
 
 @shared_task(bind=True)
@@ -70,6 +67,7 @@ def process_job(self, job_id):
     except Exception as e:
         job.status = "FAILURE"
         job.result = str(e)
+        celery_logger.error(f"error: {e}")
 
     job.save()
     return {"status": job.status, "output_file": job.output_file.url}

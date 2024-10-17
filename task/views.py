@@ -24,18 +24,3 @@ class JobViewSet(viewsets.ModelViewSet):
         updated_serializer = self.get_serializer(job)
 
         return Response(updated_serializer.data, status=status.HTTP_201_CREATED)
-
-
-# @api_view(["GET"])
-# def job_progress(request, job_id):
-#     try:
-#         job = Job.objects.get(id=job_id)
-#         return Response(
-#             {
-#                 "status": job.status,
-#                 "progress": job.progress,
-#                 "output_file": job.output_file.url if job.output_file else None,
-#             }
-#         )
-#     except Job.DoesNotExist:
-#         return Response({"error": "Job not found"}, status=404)

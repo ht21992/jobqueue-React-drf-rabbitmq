@@ -49,7 +49,6 @@ const JobsList = ({ jobs }) => {
       } else if (mimeType.startsWith("video/")) {
         const videFormats = ["mp4", "avi"].filter((f) => f !== fileFormat);
         setAvailableFormats(videFormats);
-        // setConversionFormat("mp4");
         setConversionFormat(videFormats[0]);
       } else {
         setAvailableFormats([]);

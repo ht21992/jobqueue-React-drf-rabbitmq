@@ -26,6 +26,7 @@ body {
 .job-row:hover {
   transform: scale(1.02);
   background-color: #f1f3f5;
+  border-left: solid 6px #454d55;
 }
 
 

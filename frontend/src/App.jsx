@@ -1,7 +1,7 @@
 import "./App.css";
 import "./styles/index.css";
 import { useDispatch, useSelector } from "react-redux";
-import { useState, useEffect } from "react";
+import { useState, useEffect,useLayoutEffect } from "react";
 import { fetchJobsListAsync } from "./slices/jobSlice";
 import JobsList from "./components/jobs/JobsList";
 
@@ -11,9 +11,8 @@ function App() {
 
   const dispatch = useDispatch();
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     dispatch(fetchJobsListAsync());
-
   }, []);
 
 

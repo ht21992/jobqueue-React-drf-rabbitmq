@@ -23,7 +23,7 @@ const Job = ({ job, onDelete }) => {
   };
 
   const [progress, setProgress] = useState(progressDict[job.status]);
-  const [description, setDescription] = useState("");
+  const [description, setDescription] = useState(job.result);
   const [status, setStatus] = useState(job.status);
   const [outputFile, setOutputFile] = useState(job.output_file);
 
@@ -41,7 +41,7 @@ const Job = ({ job, onDelete }) => {
               setOutputFile(response.data.result.output_file);
               setProgress(response.data.progress.current);
               setStatus(response.data.result.status);
-              setDescription("");
+              setDescription(response.data.result.status);
               clearInterval(interval);
             }
           })

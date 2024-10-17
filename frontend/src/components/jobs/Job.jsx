@@ -58,7 +58,7 @@ const Job = ({ job, onDelete }) => {
     <tr className="job-row shadow-sm">
       <td className="job-id fw-bold">{job.id}</td>
       <td>
-        <span className={`badge ${statusClassDict[status]} px-3 py-2`}>
+        <span className={`badge badge-pill ${statusClassDict[status]} px-3 py-2`}>
           {status}
         </span>
       </td>

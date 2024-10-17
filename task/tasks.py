@@ -55,7 +55,7 @@ def process_job(self, job_id):
 
             # Start conversion with periodic progress updates
             for t in range(0, int(total_duration) + 1):
-                time.sleep(1)  # Simulate time passing
+                time.sleep(0.1)  # Simulate time passing
                 progress_callback(t)
 
             clip.write_videofile(output_path, codec="libx264", logger=None)

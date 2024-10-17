@@ -64,7 +64,7 @@ const JobsList = ({ jobs }) => {
               <div className="custom-file mb-2 mx-2">
                 <Input
                   type="file"
-                  className="custom-file-input"
+                  className="custom-file-input px-2"
                   id="inputFile"
                   onChange={(e) => onFileChange(e)}
                   required
